@@ -4,10 +4,6 @@ node_js:
   - "10"
   - "9"
   - "8"
-branches:
-  only:
-    - master
-    - develop
 install:
   - yarn
 before_script:
