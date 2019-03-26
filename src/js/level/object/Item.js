@@ -1,26 +1,26 @@
 export default class Item {
-    constructor(row, column) {
-        if (this.constructor === Item) {
-            throw new Error('Item can\'t be initialized directly.');
-        }
-
-        this.row = row;
-        this.column = column;
+  constructor(row, column) {
+    if (this.constructor === Item) {
+      throw new Error('Item can\'t be initialized directly.');
     }
 
-    get row() {
-        return this._row;
-    }
+    this.row = row;
+    this.column = column;
+  }
 
-    set row(row) {
-        this._row = row;
-    }
+  get row() {
+    return this._row;
+  }
 
-    get column() {
-        return this._column;
-    }
+  set row(row) {
+    this._row = row;
+  }
 
-    set column(column) {
-        this._column = column;
-    }
+  get column() {
+    return this._column;
+  }
+
+  set column(column) {
+    this._column = column;
+  }
 }

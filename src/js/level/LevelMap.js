@@ -1,174 +1,174 @@
 'use strict';
 
 const validCharacters = [
-    '@',    // worker
-    '+',    // worker on goal
-    '#',    // wall
-    '.',    // goal
-    '$',    // box
-    '*',    // box on goal
-    ' '     // space
+  '@', // worker
+  '+', // worker on goal
+  '#', // wall
+  '.', // goal
+  '$', // box
+  '*', // box on goal
+  ' ' // space
 ];
 
 export default class LevelMap {
-    constructor(items) {
-        this.items = items || [];
-    }
+  constructor(items) {
+    this.items = items || [];
+  }
 
-    get rows() {
-        return this._rows;
-    }
+  get rows() {
+    return this._rows;
+  }
 
-    set rows(rows) {
-        if (rows < this._rows) {
-            this._items.splice(this.linearIndex(rows, 0), (this._rows - rows) * this._columns);
+  set rows(rows) {
+    if (rows < this._rows) {
+      this._items.splice(this.linearIndex(rows, 0), (this._rows - rows) * this._columns);
+    }
+    else if (rows > this._rows) {
+      for (let row = rows; row < this._rows; row++) {
+        for (let column = 0; column < this.columns; column++) {
+          this._items.push(' ');
         }
-        else if (rows > this._rows) {
-            for (let row = rows; row < this._rows; row++) {
-                for (let column = 0; column < this.columns; column++) {
-                    this._items.push(' ');
-                }
-            }
+      }
+    }
+    this._rows = rows;
+  }
+
+  get columns() {
+    return this._columns;
+  }
+
+  set columns(columns) {
+    if (columns < this._columns) {
+      for (let row = 0; row < this._rows; row++) {
+        this._items.splice((row + 1) * columns, this._columns - columns);
+      }
+    }
+    else if (columns > this._columns) {
+      for (let row = 0; row < this._rows; row++) {
+        for (let column = this._columns; column < columns; column++) {
+          this._items.splice(row * columns + column, 0, ' ');
         }
-        this._rows = rows;
+      }
+    }
+    this._columns = columns;
+  }
+
+  get items() {
+    var items = [];
+
+    for (let row = 0; row < this.rows; row++) {
+      const begin = this.linearIndex(row, 0);
+      items.push(this._items.slice(begin, begin + this.columns).join('').replace(/ +$/, ''));
     }
 
-    get columns() {
-        return this._columns;
+    return items;
+  }
+
+  set items(items) {
+    this._items = [];
+
+    const size = LevelMap.detectSize(items);
+    this._rows = size.rows;
+    this._columns = size.columns;
+
+    for (let row = 0; row < this.rows; row++) {
+      for (let column = 0; column < this.columns; column++) {
+        this._items.push(column < items[row].length ? items[row][column] : ' ');
+      }
+    }
+  }
+
+  normalize() {
+    let items = this.items,
+      row = 0, line;
+
+    while (row < items.length) {
+      line = items[row].trim();
+      if (line === '') {
+        items.splice(row, 1);
+      }
+      else {
+        items[row] = line;
+        row++;
+      }
     }
 
-    set columns(columns) {
-        if (columns < this._columns) {
-            for (let row = 0; row < this._rows; row++) {
-                this._items.splice((row + 1) * columns, this._columns - columns);
-            }
-        }
-        else if (columns > this._columns) {
-            for (let row = 0; row < this._rows; row++) {
-                for (let column = this._columns; column < columns; column++) {
-                    this._items.splice(row * columns + column, 0, ' ');
-                }
-            }
-        }
-        this._columns = columns;
+    this.items = items;
+  }
+
+  linearIndex(row, column) {
+    return row * this.columns + column;
+  }
+
+  insert(row, column, item) {
+    if (!LevelMap.isItemValid(item)) {
+      item = ' ';
     }
+    this._items[this.linearIndex(row, column)] = item;
+  }
 
-    get items() {
-        var items = [];
+  at(row, column) {
+    return this._items[this.linearIndex(row, column)];
+  }
 
-        for (let row = 0; row < this.rows; row++) {
-            let begin = this.linearIndex(row, 0);
-            items.push(this._items.slice(begin, begin + this.columns).join('').replace(/ +$/, ''));
-        }
+  remove(row, column) {
+    this._items[this.linearIndex(row, column)] = ' ';
+  }
 
-        return items;
-    }
+  validate() {
+    let workersCount = 0,
+      goalsCount = 0,
+      boxesCount = 0;
 
-    set items(items) {
-        this._items = [];
+    this._items.forEach(function(item) {
+      if (LevelMap.isWorkerItem(item)) {
+        workersCount++;
+      }
+      if (LevelMap.isGoalItem(item)) {
+        goalsCount++;
+      }
+      if (LevelMap.isBoxItem(item)) {
+        boxesCount++;
+      }
+    });
 
-        let size = LevelMap.detectSize(items);
-        this._rows = size.rows;
-        this._columns = size.columns;
+    return workersCount === 1 && goalsCount > 0 && goalsCount === boxesCount;
+  }
 
-        for (let row = 0; row < this.rows; row++) {
-            for (let column = 0; column < this.columns; column++) {
-                this._items.push(column < items[row].length ? items[row][column] : ' ');
-            }
-        }
-    }
+  toString() {
+    return this.items.join('\n');
+  }
 
-    normalize() {
-        let items = this.items,
-            row = 0, line;
+  static detectSize(items) {
+    return {
+      rows: items.length,
+      columns: items.length === 0 ? 0 : Math.max.apply(null, items.map((row) => {
+        return row.length;
+      }))
+    };
+  }
 
-        while (row < items.length) {
-            line = items[row].trim();
-            if (line === '') {
-                items.splice(row, 1);
-            }
-            else {
-                items[row] = line;
-                row++;
-            }
-        }
+  static isItemValid(character) {
+    return validCharacters.indexOf(character) >= 0;
+  }
 
-        this.items = items;
-    }
+  static isWorkerItem(character) {
+    return character === '@' || character === '+';
+  }
 
-    linearIndex(row, column) {
-        return row * this.columns + column;
-    }
+  static isWallItem(character) {
+    return character === '#';
+  }
 
-    insert(row, column, item) {
-        if (!LevelMap.isItemValid(item)) {
-            item = ' ';
-        }
-        this._items[this.linearIndex(row, column)] = item;
-    }
+  static isGoalItem(character) {
+    return character === '.' || character === '+' || character === '*';
+  }
 
-    at(row, column) {
-        return this._items[this.linearIndex(row, column)];
-    }
+  static isBoxItem(character) {
+    return character === '$' || character === '*';
+  }
 
-    remove(row, column) {
-        this._items[this.linearIndex(row, column)] = ' ';
-    }
-
-    validate() {
-        let workersCount = 0,
-            goalsCount = 0,
-            boxesCount = 0;
-
-        this._items.forEach(function(item) {
-            if (LevelMap.isWorkerItem(item)) {
-                workersCount++;
-            }
-            if (LevelMap.isGoalItem(item)) {
-                goalsCount++;
-            }
-            if (LevelMap.isBoxItem(item)) {
-                boxesCount++;
-            }
-        });
-
-        return workersCount === 1 && goalsCount > 0 && goalsCount === boxesCount;
-    }
-
-    toString() {
-        return this.items.join('\n');
-    }
-
-    static detectSize(items) {
-        return {
-            rows: items.length,
-            columns: items.length === 0 ? 0 : Math.max.apply(null, items.map((row) => {
-                return row.length;
-            }))
-        };
-    }
-
-    static isItemValid(character) {
-        return validCharacters.indexOf(character) >= 0;
-    }
-
-    static isWorkerItem(character) {
-        return character === '@' || character === '+';
-    }
-
-    static isWallItem(character) {
-        return character === '#';
-    }
-
-    static isGoalItem(character) {
-        return character === '.' || character === '+' || character === '*';
-    }
-
-    static isBoxItem(character) {
-        return character === '$' || character === '*';
-    }
-
-    static isSpaceItem(character) {
-        return character === ' ';
-    }
+  static isSpaceItem(character) {
+    return character === ' ';
+  }
 }

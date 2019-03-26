@@ -2,83 +2,83 @@ import Direction from '../Direction';
 import Item from './Item';
 
 export default class Movable extends Item {
-    constructor(row, column) {
-        super(row, column);
+  constructor(row, column) {
+    super(row, column);
 
-        this._targetRow = row;
-        this._targetColumn = column;
-        this._stepSize = 0;
+    this._targetRow = row;
+    this._targetColumn = column;
+    this._stepSize = 0;
 
-        this._lastHorizontalDirection = Direction.LEFT;
-        this._lastVerticalDirection = Direction.DOWN;
+    this._lastHorizontalDirection = Direction.LEFT;
+    this._lastVerticalDirection = Direction.DOWN;
 
-        this._consecutiveStepsCount = 0;
-        this._movesCount = 0;
+    this._consecutiveStepsCount = 0;
+    this._movesCount = 0;
+  }
+
+  move(direction, stepSize) {
+    const shift = Direction.getShift(direction);
+
+    this._targetRow = this.row + shift.y;
+    this._targetColumn = this.column + shift.x;
+
+    this.stepSize = stepSize;
+
+    if (Direction.isValidHorizontal(direction)) {
+      this._lastHorizontalDirection = direction;
+    }
+    else if (Direction.isValidVertical(direction)) {
+      this._lastVerticalDirection = direction;
     }
 
-    move(direction, stepSize) {
-        let shift = Direction.getShift(direction);
+    this._movesCount++;
+  }
 
-        this._targetRow = this.row + shift.y;
-        this._targetColumn = this.column + shift.x;
+  animate() {
+    const stepX = Math.sign(this._targetColumn - this.column) * this.stepSize,
+      stepY = Math.sign(this._targetRow - this.row) * this.stepSize;
 
-        this.stepSize = stepSize;
+    this.column = this.column + stepX;
+    this.row = this.row + stepY;
 
-        if (Direction.isValidHorizontal(direction)) {
-            this._lastHorizontalDirection = direction;
-        }
-        else if (Direction.isValidVertical(direction)) {
-            this._lastVerticalDirection = direction;
-        }
+    this._consecutiveStepsCount += 1;
 
-        this._movesCount++;
-    }
+    return this.row === this._targetRow && this.column === this._targetColumn;
+  }
 
-    animate() {
-        let stepX = Math.sign(this._targetColumn - this.column) * this.stepSize,
-            stepY = Math.sign(this._targetRow - this.row) * this.stepSize;
+  reset() {
+    this._consecutiveStepsCount = 0;
+  }
 
-        this.column = this.column + stepX;
-        this.row = this.row + stepY;
+  get stepSize() {
+    return this._stepSize;
+  }
 
-        this._consecutiveStepsCount += 1;
+  set stepSize(stepSize) {
+    this._stepSize = stepSize;
+  }
 
-        return this.row === this._targetRow && this.column === this._targetColumn;
-    }
+  get lastHorizontalDirection() {
+    return this._lastHorizontalDirection;
+  }
 
-    reset() {
-        this._consecutiveStepsCount = 0;
-    }
+  set lastHorizontalDirection(direction) {
+    this._lastHorizontalDirection = direction;
+  }
 
-    get stepSize() {
-        return this._stepSize;
-    }
+  get lastVerticalDirection() {
+    return this._lastVerticalDirection;
+  }
 
-    set stepSize(stepSize) {
-        this._stepSize = stepSize;
-    }
+  set lastVerticalDirection(direction) {
+    this._lastVerticalDirection = direction;
+  }
 
-    get lastHorizontalDirection() {
-        return this._lastHorizontalDirection;
-    }
+  get consecutiveStepsCount() {
+    return this._consecutiveStepsCount;
+  }
 
-    set lastHorizontalDirection(direction) {
-        this._lastHorizontalDirection = direction;
-    }
-
-    get lastVerticalDirection() {
-        return this._lastVerticalDirection;
-    }
-
-    set lastVerticalDirection(direction) {
-        this._lastVerticalDirection = direction;
-    }
-
-    get consecutiveStepsCount() {
-        return this._consecutiveStepsCount;
-    }
-
-    get movesCount() {
-        return this._movesCount;
-    }
+  get movesCount() {
+    return this._movesCount;
+  }
 }

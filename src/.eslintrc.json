@@ -1,0 +1,6 @@
+{
+  "extends": "ezze-react",
+  "env": {
+    "node": false
+  }
+}

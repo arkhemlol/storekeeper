@@ -3,55 +3,55 @@ import _ from 'underscore';
 import LevelSet from '../LevelSet';
 import Loader from './Loader';
 
-let commentRegExp = /^::/,
-    rowRegExp = /^[@+#.$* ]+$/;
+const commentRegExp = /^::/,
+  rowRegExp = /^[@+#.$* ]+$/;
 
 export default class LoaderSok extends Loader {
-    constructor() {
-        super();
-    }
+  constructor() {
+    super();
+  }
 
-    loadFromUrl(url, options) {
-        options = options || {};
-        options.dataType = 'text';
-        return super.loadFromUrl(url, options);
-    }
+  loadFromUrl(url, options) {
+    options = options || {};
+    options.dataType = 'text';
+    return super.loadFromUrl(url, options);
+  }
 
-    parse(data) {
-        let lines = data.split('\n');
+  parse(data) {
+    const lines = data.split('\n');
 
-        data = {
-            levels: []
-        };
+    data = {
+      levels: []
+    };
 
-        // TODO: implement reading metadata (titles, descriptions, etc.)
+    // TODO: implement reading metadata (titles, descriptions, etc.)
 
-        let level = null;
-        _.each(lines, (line, i) =>  {
-            line = line.replace(/\r$/, '');
+    let level = null;
+    _.each(lines, (line, i) => {
+      line = line.replace(/\r$/, '');
 
-            if (commentRegExp.test(line)) {
-                return;
-            }
+      if (commentRegExp.test(line)) {
+        return;
+      }
 
-            if (rowRegExp.test(line)) {
-                if (level === null) {
-                    level = {
-                        name: '',
-                        description: '',
-                        items: []
-                    };
-                }
-                level.items.push(line);
-            }
-            else {
-                if (level !== null) {
-                    data.levels.push(level);
-                }
-                level = null;
-            }
-        });
+      if (rowRegExp.test(line)) {
+        if (level === null) {
+          level = {
+            name: '',
+            description: '',
+            items: []
+          };
+        }
+        level.items.push(line);
+      }
+      else {
+        if (level !== null) {
+          data.levels.push(level);
+        }
+        level = null;
+      }
+    });
 
-        return new LevelSet(data);
-    }
+    return new LevelSet(data);
+  }
 }

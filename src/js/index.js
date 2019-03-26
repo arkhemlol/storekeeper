@@ -6,6 +6,6 @@ import appConfig from './app/config';
 import '../less/storekeeper.less';
 
 $(function() {
-    const app = new App(appConfig);
-    app.start();
+  const app = new App(appConfig);
+  app.start();
 });
