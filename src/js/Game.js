@@ -12,7 +12,7 @@ class Game {
       throw new Error('Renderer is not provided or invalid.');
     }
 
-    _.bindAll(this, 'animationFrame');
+    this.animationFrame = this.animationFrame.bind(this);
 
     this.renderer = options.renderer;
 

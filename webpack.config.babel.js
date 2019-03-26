@@ -94,7 +94,7 @@ export default (env, argv) => {
           'http-equiv': 'Expires',
           content: '0'
         }],
-        appMountId: 'app',
+        appMountId: 'container',
         minify: {
           collapseWhitespace: mode === 'production'
         }
