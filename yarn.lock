@@ -2254,6 +2254,11 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
+dissemination@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/dissemination/-/dissemination-0.5.0.tgz#aa99776d437fdaebaceac3a951e067f5ae71c3f1"
+  integrity sha512-/QLEUZ9wkTz4r3fffi0GcufX/P5S+zHJr7JFZSQMKEWKG9/VuTKjF2NOG5E8CeJqu0KsHMoz0CWg5Wl5xsu13g==
+
 dns-equal@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/dns-equal/-/dns-equal-1.0.0.tgz#b39e7f1da6eb0a75ba9c17324b34753c47e0654d"

@@ -1,9 +1,12 @@
 import { observable } from 'mobx';
 
-class GeneralStore {
+import BasicStore from './BasicStore';
+
+class GeneralStore extends BasicStore {
   @observable language = null;
 
-  constructor() {
+  constructor(options) {
+    super({ ...options, key: 'general' });
   }
 }
 

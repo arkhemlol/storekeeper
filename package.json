@@ -2,7 +2,7 @@
   "name": "storekeeper",
   "version": "0.3.1",
   "description": "JavaScript implementation of Sokoban game",
-  "main": "src/js/index.js",
+  "main": "src/game",
   "scripts": {
     "start": "node server.js",
     "dist": "webpack --mode=production --progress",
@@ -25,6 +25,7 @@
     "@tweenjs/tween.js": "^17.3.0",
     "bootstrap": "^4.3.1",
     "classnames": "^2.2.6",
+    "dissemination": "^0.5.0",
     "jquery": "^3.3.1",
     "mobx": "^5.9.0",
     "mobx-react": "^5.4.3",
